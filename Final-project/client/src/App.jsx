@@ -14,6 +14,9 @@ import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import LiveClasses from "./pages/Liveclasses";
 import AddLiveClass from "./pages/Addliveclass";
+import Admindashboard from "./pages/Admindashboard";
+import Instructordashboard from "./pages/Instructordashboard";
+import Studentdashboard from "./pages/Studentdashboard";
 
 const App = () => {
   return (
@@ -35,6 +38,10 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/live-classes" element={<LiveClasses />} />
           <Route path="/add-live-class" element={<AddLiveClass />} />
+           <Route path="/admin-dashboard" element={<Admindashboard />} />
+           <Route path="/instructor-dashboard" element={<Instructordashboard />} />
+           <Route path="/student-dashboard" element={<Studentdashboard />} />
+          
         </Routes>
       </div>
       <Footer />

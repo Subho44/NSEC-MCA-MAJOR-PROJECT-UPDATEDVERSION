@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import CourseForm from "../components/Courseform";
-import { useNavigate, Link } from "react-router-dom";
+import CourseForm from "../components/CourseForm";
+import { useNavigate } from "react-router-dom";
 
 const AddCourse = () => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const [formData, setFormData] = useState({
     title: "",
     instructor: "",
@@ -13,17 +15,16 @@ const AddCourse = () => {
     category: "",
     description: "",
   });
+
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login first");
+    if (!user || (user.role !== "admin" && user.role !== "instructor")) {
+      alert("Only admin or instructor can add course");
       navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,10 +40,13 @@ const AddCourse = () => {
     e.preventDefault();
 
     try {
-      setLoading(true);
       const token = localStorage.getItem("token");
       const data = new FormData();
-      Object.keys(formData).forEach((key) => data.append(key, formData[key]));
+
+      Object.keys(formData).forEach((key) => {
+        data.append(key, formData[key]);
+      });
+
       images.forEach((img) => data.append("images", img));
 
       await axios.post("http://localhost:5500/api/courses", data, {
@@ -56,36 +60,32 @@ const AddCourse = () => {
       navigate("/");
     } catch (error) {
       alert(error.response?.data?.message || "Add course failed");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-10 px-4">
-      <div className="max-w-4xl mx-auto">
-        <Link to="/" className="inline-block mb-4 text-blue-600 font-medium">← Back to Home</Link>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+        <CourseForm
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          handelFile={handleFileChange}
+          btnText="Add Course"
+        />
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <CourseForm
-            formData={formData}
-            handleChange={handleChange}
-            handleSubmit={handleSubmit}
-            handelFile={handleFileChange}
-            btnText={loading ? "Adding..." : "Add Course"}
-          />
-
-          {previewImages.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-700">Image Preview</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {previewImages.map((src, index) => (
-                  <img key={index} src={src} alt="preview" className="w-full h-32 object-cover rounded-lg border shadow" />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+        {previewImages.length > 0 && (
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+            {previewImages.map((src, index) => (
+              <img
+                key={index}
+                src={src}
+                alt="preview"
+                className="w-full h-32 object-cover rounded-lg border"
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
