@@ -2,15 +2,14 @@ const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema(
   {
-    title: String,
-    instructor: String,
-    price: Number,
-    duration: String,
-    category: String,
-    description: String,
-    images: [String],
-    user: String,
-    createdByRole: String,
+    title: { type: String, required: true },
+    instructor: { type: String, required: true },
+    price: { type: Number, required: true },
+    duration: { type: String, required: true },
+    category: { type: String, required: true },
+    description: { type: String, required: true },
+    images: [{ type: String }],
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true }
 );

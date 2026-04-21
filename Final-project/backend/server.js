@@ -19,7 +19,6 @@ app.use("/api/courses", require("./routes/courseRoutes"));
 app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/live", require("./routes/liveclassRoutes"));
-app.use("/api/admin",require("./routes/adminRoutes"));
 
 app.get("/", (req, res) => {
   res.send("API running...");

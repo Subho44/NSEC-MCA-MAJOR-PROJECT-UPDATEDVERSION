@@ -16,8 +16,7 @@ const Cart = () => {
     fetchCart();
   }, []);
 
-  const total =
-    cart?.courses?.reduce((sum, item) => sum + item.price, 0) || 0;
+  const total = cart?.courses?.reduce((sum, item) => sum + item.price, 0) || 0;
 
   const placeOrder = async () => {
     try {
@@ -25,7 +24,6 @@ const Cart = () => {
         userId: user._id,
         paymentMethod: payment,
       });
-
       alert("Order placed");
       setCart(null);
     } catch (error) {
@@ -44,10 +42,7 @@ const Cart = () => {
       {cart.courses.map((item, i) => (
         <div key={i} className="flex justify-between bg-white p-4 mb-3 shadow rounded-xl">
           <div className="flex gap-4">
-            <img
-              src={`http://localhost:5500/uploads/${item.image}`}
-              className="w-20 h-20 object-cover rounded"
-            />
+            <img src={`http://localhost:5500/uploads/${item.image}`} className="w-20 h-20 object-cover rounded" />
             <div>
               <h3>{item.title}</h3>
               <p>₹{item.price}</p>
@@ -57,25 +52,14 @@ const Cart = () => {
       ))}
 
       <div className="bg-white p-5 shadow rounded-xl mt-5">
-        <h3 className="text-xl font-bold">Total Bill: ₹{total}</h3>
-
+        <h3 className="text-xl font-bold">Total: ₹{total}</h3>
         <div className="mt-4">
           <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              checked={payment === "COD"}
-              onChange={() => setPayment("COD")}
-            />
+            <input type="radio" checked={payment === "COD"} onChange={() => setPayment("COD")} />
             Cash On Delivery
           </label>
         </div>
-
-        <button
-          onClick={placeOrder}
-          className="bg-green-600 text-white px-6 py-2 mt-4 rounded-lg"
-        >
-          Place Order
-        </button>
+        <button onClick={placeOrder} className="bg-green-600 text-white px-6 py-2 mt-4 rounded-lg">Place Order</button>
       </div>
     </div>
   );
