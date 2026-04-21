@@ -1,13 +1,21 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const sendEmail = require("../utils/sendEmail");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -22,6 +30,7 @@ exports.registerUser = async (req, res) => {
     if (oldUser && !oldUser.isVerified) {
       oldUser.name = name;
       oldUser.password = hashedPassword;
+      oldUser.role = role;
       oldUser.otp = otp;
       oldUser.otpExpire = new Date(Date.now() + 5 * 60 * 1000);
       await oldUser.save();
@@ -30,12 +39,18 @@ exports.registerUser = async (req, res) => {
         name,
         email,
         password: hashedPassword,
+        role,
         otp,
         otpExpire: new Date(Date.now() + 5 * 60 * 1000),
       });
     }
 
-    await sendEmail(email, "OTP Verification", `Your OTP is ${otp}. It will expire in 5 minutes.`);
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "OTP Verification",
+      text: `Your OTP is ${otp}. It will expire in 5 minutes.`,
+    });
 
     res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
@@ -46,10 +61,17 @@ exports.registerUser = async (req, res) => {
 exports.verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
+
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (user.otp !== otp) return res.status(400).json({ message: "Invalid OTP" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.otp !== otp) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
+
     if (!user.otpExpire || user.otpExpire < new Date()) {
       return res.status(400).json({ message: "OTP expired" });
     }
@@ -68,16 +90,30 @@ exports.verifyOtp = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (!user.isVerified) return res.status(400).json({ message: "Please verify OTP first" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.isVerified) {
+      return res.status(400).json({ message: "Please verify OTP first" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid password" });
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
 
     const token = jwt.sign(
-      { id: user._id, name: user.name, email: user.email },
+      {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -85,7 +121,12 @@ exports.loginUser = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: "Login failed", error: error.message });

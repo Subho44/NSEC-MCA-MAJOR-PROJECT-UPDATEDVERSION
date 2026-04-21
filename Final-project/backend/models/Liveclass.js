@@ -7,6 +7,8 @@ const liveClassSchema = new mongoose.Schema(
     date: String,
     time: String,
     meetingLink: String,
+    createdBy: String,
+    createdByRole: String,
   },
   { timestamps: true }
 );
