@@ -17,6 +17,7 @@ import AddLiveClass from "./pages/Addliveclass";
 import Admindashboard from "./pages/Admindashboard";
 import Instructordashboard from "./pages/Instructordashboard";
 import Studentdashboard from "./pages/Studentdashboard";
+import Chat from "./pages/Chat";
 
 const App = () => {
   return (
@@ -41,7 +42,7 @@ const App = () => {
            <Route path="/admin-dashboard" element={<Admindashboard />} />
            <Route path="/instructor-dashboard" element={<Instructordashboard />} />
            <Route path="/student-dashboard" element={<Studentdashboard />} />
-          
+           <Route path="/chat" element={<Chat/>} />
         </Routes>
       </div>
       <Footer />

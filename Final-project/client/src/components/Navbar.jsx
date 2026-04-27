@@ -37,6 +37,14 @@ const Navbar = () => {
           <Link to="/live-classes" className="hover:text-blue-600">
             Live Classes
           </Link>
+          {
+            token && (
+              <Link to="/chat" className="hover:text-blue-600">
+                Chat
+              </Link>
+            )
+          }
+
 
           {user?.role === "student" && (
             <Link to="/cart" className="hover:text-blue-600">
