@@ -18,6 +18,7 @@ import Admindashboard from "./pages/Admindashboard";
 import Instructordashboard from "./pages/Instructordashboard";
 import Studentdashboard from "./pages/Studentdashboard";
 import Chat from "./pages/Chat";
+import Chatboat from "./pages/Chatboat";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/c" element={<Chatboat />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/f" element={<Feature />} />
           <Route path="/add-course" element={<AddCourse />} />

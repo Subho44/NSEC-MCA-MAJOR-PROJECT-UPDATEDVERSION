@@ -33,6 +33,9 @@ const Navbar = () => {
           <Link to="/contact" className="hover:text-blue-600">
             Contact
           </Link>
+          <Link to="/c" className="hover:text-blue-600">
+            Ai chat
+          </Link>
 
           <Link to="/live-classes" className="hover:text-blue-600">
             Live Classes
