@@ -115,6 +115,70 @@ io.on("connection",(socket)=>{
   console.log("socket disconnected:",socket.id);
  });
 });
+//resume analysis
+app.post("/api/resume", async(req,res)=>{
+  try {
+    const {
+      name,
+      email,
+      phone,
+      location,
+      career,
+      skills,
+      education,
+      experience,
+      projects,
+    } = req.body;
+    const prompt = `
+    You are ATS-friendly professional resume builder
+    Name:${name}
+    Email:${email}
+    Phone:${phone}
+    Location:${location}
+    Career Goal:${career}
+    Skills:${skills}
+    Education:${education}
+    Experience:${experience}
+    Projects:${projects}
+
+    GIVE OUTPUT:
+    ATS score:
+    professional summary:
+    write 6-8 line
+    Technical Skills:
+    Projects:
+    Education:
+    Experience:
+    ATS Important suggestions:
+    Best course suggestions:
+    Course roadmap:
+    `;
+   const completions = await groq.chat.completions.create({
+    model:"llama-3.1-8b-instant",
+    messages:[
+      {
+        role:"system",
+        content:"you are expert ats resume for it courses"
+      },
+      {
+        role:"user",
+        content:prompt,
+      },
+    ],
+    temperature:0.5,
+    max_tokens:1200,
+   });
+   const result = completions.choices[0].message.content;
+  res.json({
+    success:true,
+    result,
+  });
+
+  } catch(err) {
+    console.error(err);
+  }
+})
+
 
 app.get("/", (req, res) => {
   res.send("API running...");
